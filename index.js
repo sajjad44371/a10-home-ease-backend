@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const { MongoClient, ServerApiVersion } = require("mongodb");
+const { default: axios } = require("axios");
 require("dotenv").config();
 const port = process.env.PORT || 3000;
 
@@ -33,6 +34,31 @@ app.get("/", (req, res) => {
 async function run() {
   try {
     await client.connect();
+
+    // start-------------------------------------------------------------------------------
+    // database
+    const database = client.db("homeEaseDB");
+    // collection
+    const servicesCollection = database.collection("services");
+
+    // post services
+    app.post("/services", async (req, res) => {
+      const serviceData = req.body;
+      const date = new Date().toLocaleString();
+      serviceData.createdAt = date;
+      const result = await servicesCollection.insertOne(serviceData);
+      res.send(result);
+    });
+
+    // get services
+    app.get("/services", async (req, res) => {
+      const cursor = servicesCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // end---------------------------------------------------------------------------------
+
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
