@@ -73,6 +73,26 @@ async function run() {
       res.send(result);
     });
 
+    // update
+    app.patch("/services/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedService = req.body;
+      const query = {
+        _id: new ObjectId(id),
+      };
+      const updateDoc = {
+        $set: {
+          service_name: updatedService.service_name,
+          price: updatedService.price,
+          description: updatedService.description,
+          category: updatedService.category,
+          photoURL: updatedService.photoURL,
+        },
+      };
+      const result = await servicesCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
+
     // end---------------------------------------------------------------------------------
 
     await client.db("admin").command({ ping: 1 });
