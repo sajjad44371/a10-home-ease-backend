@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const { default: axios } = require("axios");
 require("dotenv").config();
 const port = process.env.PORT || 3000;
@@ -52,7 +52,23 @@ async function run() {
 
     // get services
     app.get("/services", async (req, res) => {
-      const cursor = servicesCollection.find();
+      const email = req.query.email;
+      const query = {};
+      if (email) {
+        query.email = email;
+      }
+      const cursor = servicesCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // get specific user services
+    app.get("/services/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = {
+        _id: new ObjectId(id),
+      };
+      const cursor = servicesCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
@@ -61,7 +77,7 @@ async function run() {
 
     await client.db("admin").command({ ping: 1 });
     console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
+      "Pinged your deployment. You successfully connected to MongoDB!",
     );
   } finally {
     // await client.close();
