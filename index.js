@@ -105,11 +105,24 @@ async function run() {
     });
 
     // booking apis
+    // post
     app.post("/bookings", async (req, res) => {
       const bookingData = req.body;
       const date = new Date().toLocaleString();
       bookingData.createdAt = date;
       const result = await bookingsCollection.insertOne(bookingData);
+      res.send(result);
+    });
+
+    // get
+    app.get("/bookings", async (req, res) => {
+      const email = req.query.email;
+      const query = {};
+      if (email) {
+        query.email = email;
+      }
+      const cursor = bookingsCollection.find(query);
+      const result = await cursor.toArray();
       res.send(result);
     });
 
