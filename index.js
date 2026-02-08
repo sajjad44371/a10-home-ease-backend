@@ -40,6 +40,7 @@ async function run() {
     const database = client.db("homeEaseDB");
     // collection
     const servicesCollection = database.collection("services");
+    const bookingsCollection = database.collection("bookings");
 
     // post services
     app.post("/services", async (req, res) => {
@@ -100,6 +101,15 @@ async function run() {
         _id: new ObjectId(id),
       };
       const result = await servicesCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // booking apis
+    app.post("/bookings", async (req, res) => {
+      const bookingData = req.body;
+      const date = new Date().toLocaleString();
+      bookingData.createdAt = date;
+      const result = await bookingsCollection.insertOne(bookingData);
       res.send(result);
     });
 
