@@ -56,7 +56,7 @@ async function run() {
       const email = req.query.email;
       const query = {};
       if (email) {
-        query.email = email;
+        query.providerEmail = email;
       }
       const cursor = servicesCollection.find(query);
       const result = await cursor.toArray();
@@ -119,10 +119,20 @@ async function run() {
       const email = req.query.email;
       const query = {};
       if (email) {
-        query.email = email;
+        query.userEmail = email;
       }
       const cursor = bookingsCollection.find(query);
       const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // delete
+    app.delete("/bookings/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = {
+        _id: new ObjectId(id),
+      };
+      const result = await bookingsCollection.deleteOne(query);
       res.send(result);
     });
 
